@@ -12,7 +12,6 @@ require (
 	go.opentelemetry.io/otel/sdk v1.27.0
 	go.opentelemetry.io/otel/trace v1.27.0
 	golang.org/x/oauth2 v0.20.0
-	google.golang.org/grpc v1.64.0
 )
 
 require (
@@ -21,6 +20,7 @@ require (
 	golang.org/x/crypto v0.23.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
+	google.golang.org/grpc v1.64.0 // indirect
 )
 
 require (

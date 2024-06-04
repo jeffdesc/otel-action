@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -16,6 +17,7 @@ type configType struct {
 	owner        string
 	repo         string
 	githubToken  string
+	insecure     bool
 }
 
 func getConfig() (configType, error) {
@@ -46,6 +48,12 @@ func getConfig() (configType, error) {
 
 	traceID := os.Getenv("TRACE_ID")
 
+	insecure := os.Getenv("OTEL_EXPORTER_INSECURE")
+	insecure_exporter, err := strconv.ParseBool(insecure)
+	if err != nil {
+		insecure_exporter = false
+	}
+
 	githubToken := os.Getenv("GITHUB_TOKEN")
 
 	repoDetails := strings.Split(repository, "/")
@@ -75,5 +83,6 @@ func getConfig() (configType, error) {
 		repo:         repoDetails[1],
 		githubToken:  githubToken,
 		traceID:      traceID,
+		insecure:     insecure_exporter,
 	}, nil
 }

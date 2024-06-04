@@ -13,6 +13,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
@@ -39,11 +40,19 @@ func setupOTEL(ctx context.Context, conf configType) (func(context.Context) erro
 		return nil, fmt.Errorf("creating stdout exporter: %w", err)
 	}
 
-	client := otlptracegrpc.NewClient(
+	grpcOptions := []otlptracegrpc.Option{
 		otlptracegrpc.WithEndpoint(conf.otelEndpoint),
 		otlptracegrpc.WithHeaders(conf.otelHeaders),
-		// otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, "")),
-	)
+	}
+
+	if conf.insecure {
+		grpcOptions = append(grpcOptions, otlptracegrpc.WithInsecure())
+	} else {
+		grpcOptions = append(grpcOptions, otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, "")))
+	}
+
+	client := otlptracegrpc.NewClient(grpcOptions...)
+
 	otelexp, err := otlptrace.New(ctx, client)
 	if err != nil {
 		return nil, fmt.Errorf("creating otlp exporter: %w", err)
