@@ -36,6 +36,16 @@ func createTraces(ctx context.Context, conf configType) error {
 		return err
 	}
 
+	// Custom Trace ID
+	if conf.traceID != "" {
+		var traceID, _ = trace.TraceIDFromHex(conf.traceID)
+		spanContext := trace.NewSpanContext(trace.SpanContextConfig{
+			TraceID: traceID,
+			// TraceFlags: 00,
+		})
+		ctx = trace.ContextWithSpanContext(ctx, spanContext)
+	}
+
 	var lastJobFinishesAt time.Time
 	ctx, workflowSpan := tracer.Start(ctx, *workflowData.Name, trace.WithTimestamp(workflowData.GetCreatedAt().Time))
 	for _, job := range jobs.Jobs {

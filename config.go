@@ -11,6 +11,7 @@ type configType struct {
 	otelHeaders  map[string]string
 	serviceName  string
 	runID        string
+	traceID      string
 	repository   string
 	owner        string
 	repo         string
@@ -43,6 +44,8 @@ func getConfig() (configType, error) {
 		return configType{}, fmt.Errorf("missing env: GITHUB_RUN_ID")
 	}
 
+	traceID := os.Getenv("TRACE_ID")
+
 	githubToken := os.Getenv("GITHUB_TOKEN")
 
 	repoDetails := strings.Split(repository, "/")
@@ -71,5 +74,6 @@ func getConfig() (configType, error) {
 		owner:        repoDetails[0],
 		repo:         repoDetails[1],
 		githubToken:  githubToken,
+		traceID:      traceID,
 	}, nil
 }
