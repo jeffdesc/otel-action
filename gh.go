@@ -41,7 +41,7 @@ func createTraces(ctx context.Context, conf configType) error {
 
 	// Set a specific Trace ID
 	if conf.traceID != "" {
-		var traceID, _ = trace.TraceIDFromHex(conf.traceID)
+		traceID, _ := trace.TraceIDFromHex(conf.traceID)
 		spanContext := trace.NewSpanContext(trace.SpanContextConfig{
 			TraceID: traceID,
 		})

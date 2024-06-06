@@ -40,16 +40,22 @@ func setupOTEL(ctx context.Context, conf configType) (func(context.Context) erro
 		return nil, fmt.Errorf("creating stdout exporter: %w", err)
 	}
 
+	// gRPC options to use in the .NewClient
 	grpcOptions := []otlptracegrpc.Option{
 		otlptracegrpc.WithEndpoint(conf.otelEndpoint),
 		otlptracegrpc.WithHeaders(conf.otelHeaders),
 	}
 
+	// Default a TLS connection
+	grpcClientSecurity := otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, ""))
+
+	// If a insecure connection is requested, lets oblige that.
 	if conf.insecure {
-		grpcOptions = append(grpcOptions, otlptracegrpc.WithInsecure())
-	} else {
-		grpcOptions = append(grpcOptions, otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, "")))
+		grpcClientSecurity = otlptracegrpc.WithInsecure()
 	}
+
+	// Append our security options to the otlptracegrpc.Options
+	grpcOptions = append(grpcOptions, grpcClientSecurity)
 
 	client := otlptracegrpc.NewClient(grpcOptions...)
 
